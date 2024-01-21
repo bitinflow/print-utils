@@ -8,7 +8,39 @@ computer.
 
 ## Installation
 
-To be done.
+### Clone the repository
+
+```bash
+git clone http://github.com/bitinflow/print-utils.git
+```
+
+### Install dependencies
+
+```bash
+npm install
+```
+
+### Install pm2
+
+```bash
+npm install pm2 -g
+```
+
+### Start the server
+
+Start and add a process to the pm2 process list:
+
+```bash
+pm2 start index.js --name print-utils
+```
+
+Stop, start and restart a process from the process list:
+
+```bash
+pm2 stop print-utils
+pm2 start print-utils
+pm2 restart print-utils
+```
 
 ## Usage
 
