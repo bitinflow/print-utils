@@ -26,6 +26,15 @@ npm install
 npm install pm2 -g
 ```
 
+#### Set home for windows
+
+Follow these steps:
+
+1. Create a new folder `c:\etc\.pm2`
+2. Create a new `PM2_HOME` variable (at System level, not User level) and set the value `c:\etc\.pm2`
+3. Close all your open terminal windows (or restart Windows)
+4. Ensure that your `PM2_HOME` has been set properly, running `echo %PM2_HOME%`
+
 ### Start the server
 
 Start and add a process to the pm2 process list:
