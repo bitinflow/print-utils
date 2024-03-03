@@ -10,6 +10,8 @@ const port = 1903
 
 const upload = multer({ dest: 'uploads/' })
 
+const discovery = discover()
+
 app.use(cors())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
@@ -19,15 +21,21 @@ app.get('/', (req, res) => {
 })
 
 app.get('/printers', async (req, res) => {
-    const printers = await getPrinters()
-    return res.json(printers.map(printer => {
-        return {
-            default: false,
-            format: 'PDF',
-            id: printer.printer || printer.deviceId,
-            name: printer.printer || printer.name,
-        }
-    }))
+    try {
+        const printers = await getPrinters()
+
+        return res.json(printers.map(printer => {
+            return {
+                default: false,
+                format: 'PDF',
+                id: printer.printer || printer.deviceId,
+                name: printer.printer || printer.name,
+            }
+        }))
+    } catch (e) {
+        console.log('Error getting printers', e)
+        return res.json([])
+    }
 })
 
 app.post('/printers/:printer/print', upload.single('file'), async (req, res) => {
