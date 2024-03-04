@@ -19,15 +19,21 @@ app.get('/', (req, res) => {
 })
 
 app.get('/printers', async (req, res) => {
-    const printers = await getPrinters()
-    return res.json(printers.map(printer => {
-        return {
-            default: false,
-            format: 'PDF',
-            id: printer.printer || printer.deviceId,
-            name: printer.printer || printer.name,
-        }
-    }))
+    try {
+        const printers = await getPrinters()
+
+        return res.json(printers.map(printer => {
+            return {
+                default: false,
+                format: 'PDF',
+                id: printer.printer || printer.deviceId,
+                name: printer.printer || printer.name,
+            }
+        }))
+    } catch (e) {
+        console.error('Error getting printers', e)
+        return res.json([])
+    }
 })
 
 app.post('/printers/:printer/print', upload.single('file'), async (req, res) => {
@@ -36,14 +42,21 @@ app.post('/printers/:printer/print', upload.single('file'), async (req, res) => 
     // query: user-id: string, docType: label
     // form data: file: binary, copies: string, shipment-ids: string
 
-    const fileToPrint = req.file.path
-    const printJob = await print(fileToPrint, printer)
-    const jobId = getRequestId(printJob)
+    try {
+        const fileToPrint = req.file.path
+        const printJob = await print(fileToPrint, printer)
+        const jobId = getRequestId(printJob)
 
-    return res.json({
-        jobs: [jobId],
-    })
-
+        return res.json({
+            jobs: [jobId],
+        })
+    } catch (e) {
+        console.error('Error printing', e)
+        return res.status(400).json({
+            error: 'Unsuccessful print job: ' + e.message,
+            error_id: null,
+        })
+    }
 })
 
 app.listen(port, () => {

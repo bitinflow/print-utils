@@ -86,7 +86,7 @@ curl --location 'http://127.0.0.1:1903/printers/PM-241-BT%20(Network)/print' \
 --form 'copies="1"'
 ```
 
-#### Response:
+#### Successful Response:
 
 > On windows the response does not return any real job id. Instead, it returns a 0.
 
@@ -97,3 +97,22 @@ curl --location 'http://127.0.0.1:1903/printers/PM-241-BT%20(Network)/print' \
   ]
 }
 ```
+
+#### Error Responses:
+
+If the request is not successful, the response will contain an error message and an error id.
+
+```json
+{
+  "error": "Missing PDF file",
+  "error_id": "missing_pdf"
+}
+```
+
+Here is a list of possible error ids (but not all of them are implemented yet):
+
+| Error ID      | Description                   |
+|---------------|-------------------------------|
+| missing_pdf   | Missing PDF file              |
+| invalid_label | Invalid label format          |
+| null          | Unsuccessful print job: {...} |
