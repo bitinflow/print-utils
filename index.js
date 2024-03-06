@@ -10,6 +10,12 @@ const port = 1903
 
 const upload = multer({ dest: 'uploads/' })
 
+const debug = process.argv.includes('--debug')
+
+if (debug) {
+    console.log('Running in debug mode')
+}
+
 app.use(cors())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
@@ -19,10 +25,20 @@ app.get('/', (req, res) => {
 })
 
 app.get('/printers', async (req, res) => {
+    const printerList = []
+
+    if (debug) {
+        printerList.push({
+            default: false,
+            format: 'PDF',
+            id: 'Fake Printer',
+            name: 'Fake Printer',
+        })
+    }
+
     try {
         const printers = await getPrinters()
-
-        return res.json(printers.map(printer => {
+        printerList.push(...printers.map(printer => {
             return {
                 default: false,
                 format: 'PDF',
@@ -32,8 +48,9 @@ app.get('/printers', async (req, res) => {
         }))
     } catch (e) {
         console.error('Error getting printers', e)
-        return res.json([])
     }
+
+    return res.json(printerList)
 })
 
 app.post('/printers/:printer/print', upload.single('file'), async (req, res) => {
@@ -41,6 +58,12 @@ app.post('/printers/:printer/print', upload.single('file'), async (req, res) => 
 
     // query: user-id: string, docType: label
     // form data: file: binary, copies: string, shipment-ids: string
+
+    if (printer === 'Fake Printer') {
+        return res.json({
+            jobs: ['0'],
+        })
+    }
 
     try {
         const fileToPrint = req.file.path
